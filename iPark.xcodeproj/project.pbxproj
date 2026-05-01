@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		DA4CF1A72F988EF400C4304D /* iPark2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPark2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA4CF1A72F988EF400C4304D /* iPark.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPark.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		DA4CF1A92F988EF400C4304D /* iPark2 */ = {
+		DA4CF1A92F988EF400C4304D /* iPark */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = iPark2;
+			path = iPark;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		DA4CF19E2F988EF400C4304D = {
 			isa = PBXGroup;
 			children = (
-				DA4CF1A92F988EF400C4304D /* iPark2 */,
+				DA4CF1A92F988EF400C4304D /* iPark */,
 				DA4CF1A82F988EF400C4304D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		DA4CF1A82F988EF400C4304D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DA4CF1A72F988EF400C4304D /* iPark2.app */,
+				DA4CF1A72F988EF400C4304D /* iPark.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DA4CF1A62F988EF400C4304D /* iPark2 */ = {
+		DA4CF1A62F988EF400C4304D /* iPark */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DA4CF1B72F988EF700C4304D /* Build configuration list for PBXNativeTarget "iPark2" */;
+			buildConfigurationList = DA4CF1B72F988EF700C4304D /* Build configuration list for PBXNativeTarget "iPark" */;
 			buildPhases = (
 				DA4CF1A32F988EF400C4304D /* Sources */,
 				DA4CF1A42F988EF400C4304D /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				DA4CF1A92F988EF400C4304D /* iPark2 */,
+				DA4CF1A92F988EF400C4304D /* iPark */,
 			);
-			name = iPark2;
+			name = iPark;
 			packageProductDependencies = (
 			);
 			productName = iPark2;
-			productReference = DA4CF1A72F988EF400C4304D /* iPark2.app */;
+			productReference = DA4CF1A72F988EF400C4304D /* iPark.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DA4CF1A22F988EF400C4304D /* Build configuration list for PBXProject "iPark2" */;
+			buildConfigurationList = DA4CF1A22F988EF400C4304D /* Build configuration list for PBXProject "iPark" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DA4CF1A62F988EF400C4304D /* iPark2 */,
+				DA4CF1A62F988EF400C4304D /* iPark */,
 			);
 		};
 /* End PBXProject section */
@@ -266,7 +266,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark2";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -300,7 +300,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark2";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -315,7 +315,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DA4CF1A22F988EF400C4304D /* Build configuration list for PBXProject "iPark2" */ = {
+		DA4CF1A22F988EF400C4304D /* Build configuration list for PBXProject "iPark" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DA4CF1B52F988EF700C4304D /* Debug */,
@@ -324,7 +324,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DA4CF1B72F988EF700C4304D /* Build configuration list for PBXNativeTarget "iPark2" */ = {
+		DA4CF1B72F988EF700C4304D /* Build configuration list for PBXNativeTarget "iPark" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DA4CF1B82F988EF700C4304D /* Debug */,

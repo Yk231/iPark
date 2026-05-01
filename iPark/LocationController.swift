@@ -22,6 +22,9 @@ class LocationController: NSObject, ObservableObject, CLLocationManagerDelegate 
     
     func startUpdating() {
         manager.requestWhenInUseAuthorization()
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.distanceFilter = 1.0
+        manager.startUpdatingLocation()
     }
     
     func stopUpdating() {
@@ -46,5 +49,15 @@ class LocationController: NSObject, ObservableObject, CLLocationManagerDelegate 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error:", error.localizedDescription)
     }
+    
+    
+    
+    func distanceToSpot(_ spot: SavedSpot) -> Double? {
+        guard let current = currentLocation else { return nil }
+        let spotLocation = CLLocation(
+            latitude: spot.latitude,
+            longitude: spot.longitude
+        )
+        return current.distance(from: spotLocation)
+    }
 }
-

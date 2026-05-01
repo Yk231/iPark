@@ -21,7 +21,7 @@ struct HistoryView: View {
     
     var body: some View {
         
-        logo
+        LogoView()
         
         if completedSpots.isEmpty {
             Text("No history yet")
@@ -75,12 +75,6 @@ struct HistoryView: View {
         
     }
     
-
-    
-    var logo: some View {
-        Text("\(Text("i").foregroundStyle(.blue))\(Text("Park"))")
-            .font(.largeTitle.bold())
-    }
     
     func delete(_ spot: ParkingSpot) {
         viewContext.delete(spot)

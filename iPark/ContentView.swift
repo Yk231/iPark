@@ -8,62 +8,44 @@ struct ContentView: View {
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \ParkingSpot.startTime, ascending: false)],
+        predicate: NSPredicate(format: "endTime == nil"),
         animation: .default
     )
     private var spots: FetchedResults<ParkingSpot>
-    var activeSpots: [ParkingSpot] {
-        spots.filter { $0.endTime == nil }
-    }
+
+    @State private var showAlerts = false
 
     var body: some View {
                 
         NavigationStack {
             ScrollView {
                 VStack(spacing: 18) {
-                    
-                    /*
-                    if let spot = activeSpot {
-                        MapView(longitude: spot.longitude, latitude: spot.latitude, title: "Saved Spot")
-                            .frame(height: 300)
-                            .clipShape(RoundedRectangle(cornerRadius: 0))
-                            .shadow(radius: 5)
-                            .onAppear { locationManager.startUpdating() }
-                    } else if let currentPos = locationManager.currentLocation {
-                        MapView(longitude: currentPos.coordinate.longitude, latitude: currentPos.coordinate.latitude, title: "You Are Here")
-                            .frame(height: 300)
-                            .clipShape(RoundedRectangle(cornerRadius: 0))
-                            .shadow(radius: 5)
-                            .onAppear { locationManager.startUpdating() }
-                    } else {
 
-
-                        // Placeholder
-                        ZStack {
-                            Color.gray.opacity(0.1)
-                            VStack {
-                                ProgressView()
-                                    .padding(.bottom, 8)
-                                Text("Finding your location...")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                    ZStack {
+                        LogoView()
+                        
+                        HStack {
+                            Spacer()
+                            
+                            NavigationLink {
+                                alertsView()
+                            } label: {
+                                Image(systemName: "bell")
+                                    .font(.title2)
                             }
                         }
-                        .frame(height: 300)
-                        .onAppear { locationManager.startUpdating() }
                     }
-                    // ----------------------------
-                     */
+                    .padding(.horizontal)
+                    
 
-
-                    logo
                     header
                     Spacer()
                     Spacer()
-                    
-                    if !activeSpots.isEmpty {
+                   
+                    if !spots.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack(spacing: 10) {
-                                ForEach(activeSpots) { spot in
+                            HStack(spacing: 10) {
+                                ForEach(spots) { spot in
                                     savedSpotCard(spot: spot)
                                 }
                             }
@@ -108,6 +90,10 @@ struct ContentView: View {
         }
     }
 
+    
+    
+    
+    // --------------------------------------------------------------------------------------------------------------------
     private var header: some View {
         VStack(spacing: 8) {
             Text("Welcome back!")
@@ -120,21 +106,16 @@ struct ContentView: View {
         .padding(.top, 8)
     }
     
-    var logo: some View {
-        Text("\(Text("i").foregroundStyle(.blue))\(Text("Park"))")
-            .font(.largeTitle.bold())
-    }
-
     private func savedSpotCard(spot: ParkingSpot) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Saved Spot")
+                    Text("Parking Spot")
                         .font(.title3.bold())
 
                     Text("Your current saved parking spot.")
                         .foregroundStyle(.secondary)
-                        //.fixedSize(horizontal: false, vertical: true)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer()
@@ -148,6 +129,28 @@ struct ContentView: View {
                     .font(.title3.bold())
             }
             
+          
+            if spot.timeLimitMinutes > 0 {
+                let startTime = spot.startTime ?? Date()
+                let deadline = startTime.addingTimeInterval(Double(spot.timeLimitMinutes) * 60)
+                
+                TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                    let isExpired = context.date > deadline
+                    
+                    HStack {
+                        Image(systemName: "timer")
+                        if isExpired {
+                            Text("Expired")
+                        } else {
+                            Text(timerInterval: startTime...deadline, countsDown: true)
+                        }
+                    }
+                    .font(.subheadline.bold())
+                    .foregroundStyle(isExpired ? .red : .blue)
+                    .padding(.vertical, 4)
+                }
+            }
+           
                         
             MapView(longitude: spot.longitude, latitude: spot.latitude)
                 .frame(height: 150)
@@ -157,7 +160,7 @@ struct ContentView: View {
             NavigationLink {
                 SavedSpotDetailView(spot: spot)
             } label: {
-                Text("View Saved Spot")
+                Text("View Parking Spot")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
                     .padding()
