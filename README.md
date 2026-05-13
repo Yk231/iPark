@@ -56,7 +56,7 @@ No external dependencies or package manager setup required.
 
 ## Tech Stack
 
-| | |
+| Functionality | Framework |
 |---|---|
 | UI | SwiftUI |
 | Persistence | Core Data |
@@ -69,7 +69,7 @@ No external dependencies or package manager setup required.
 ## Known Limitations
 
 - GPS accuracy degrades significantly in parking garages — the app will let you drop a pin manually as a fallback
-- The app saves spots you have already parked in; it does not predict or show available street/garage parking
+- The app saves spots you have already parked in. It does not predict or show available street or garage parking
 
 ---
 
