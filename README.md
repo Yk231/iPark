@@ -1,23 +1,78 @@
-Welcome to iPark, an app that you can use to save and manage your parking spots!
+# iPark
 
-When you open the home screen, you are met with 2 cards, potentially 3:
+A native iOS app for saving, managing, and navigating back to your parked car.
 
-i. Save new spot. 
-When you click this button, you are brought to the "Create spot" screen, 
-where you can enter details like the parking spot's title, floor, section, etc. 
-You can also save it's location as your current GPS location.
-Finally, there is a section to enable a time limit, and you can set how much time if you wish
-to do so. 
+---
 
-ii. View history
-This screen displays all ended parking spots. You can unarchive and permanently delete
-parking spots by swiping left and right, respectively.
+## Screenshots
 
-iii. Parking spots cards. 
-If you have ongoing parking spots, they are displayed above both cards, in a scrollable HStack. 
-You can click them, and see a detailed screen of that parking spot. In this detailed screen,
-you can edit that parking spot (refer to "Create spot" screen), a Guide Me button, and End Park (which sends it to "View history screen")
+> _Screenshots coming soon_
 
-There is also an alerts button corresponding to an alerts screen
-at the top right consisting of reminders relating to any ongoing parking spot's time limits
+---
 
+## Features
+
+- **Save your spot** — capture your parking location with a map pin or your current GPS location
+- **Spot details** — log floor, section, number, and notes for garage parking
+- **Time limits** — set a time limit and receive push notifications at 15, 10, and 5 minutes remaining, plus an expiry alert when the timer hits 0
+- **Guide Me** — open directions to your parked car in Apple Maps or Google Maps
+- **Alerts tab** — view active spots sorted by urgency, with high-priority warnings for spots expiring soon
+- **History** — browse past parking sessions with duration and location details
+- **Delete & unarchive** — swipe left to permanently delete a past session, or swipe right to restore it to active
+- **Quick Look** — tap any spot for an at-a-glance overlay of its essential details
+
+---
+
+## Requirements
+
+- iOS 17.0+
+- Xcode 16+
+- A physical device is recommended for GPS features
+
+---
+
+## Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/Yk231/iPark.git
+   ```
+2. Open `iPark.xcodeproj` in Xcode
+3. Select your target device or simulator
+4. Build and run
+
+No external dependencies or package manager setup required.
+
+---
+
+## Permissions
+
+| Permission | Purpose |
+|---|---|
+| Location (When In Use) | Saving your parking location and navigating back to your car |
+| Notifications | Time limit alerts as your parking session approaches expiry |
+
+---
+
+## Tech Stack
+
+| | |
+|---|---|
+| UI | SwiftUI |
+| Persistence | Core Data |
+| Location | CoreLocation |
+| Maps | MapKit |
+| Notifications | UserNotifications |
+
+---
+
+## Known Limitations
+
+- GPS accuracy degrades significantly in parking garages — the app will let you drop a pin manually as a fallback
+- The app saves spots you have already parked in; it does not predict or show available street/garage parking
+
+---
+
+## Credits
+
+Developed by [Yotam Krikov](https://github.com/Yk231)
