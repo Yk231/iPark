@@ -35,16 +35,17 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         let totalSeconds = Double(spot.timeLimitMinutes) * 60
         guard totalSeconds > 0 else { return }
                            
+        // Schedule alerts for 15, 10, 5, and 0 minutes left
         let alerts: [(label: String, secondsBefore: Double)] = [
-                    ("You have 15 minutes left for '\(title)'",  15 * 60),
-                    ("You have 10 minutes left for '\(title)'",  10 * 60),
-                    ("You have 5 minutes left for '\(title)'",    5 * 60),
+                    ("You have 15 minutes left for '\(title)'!",  15 * 60),
+                    ("You have 10 minutes left for '\(title)'!",  10 * 60),
+                    ("You have 5 minutes left for '\(title)'!",    5 * 60),
                     ("Your time for '\(title)' is up!",           0)
                 ]
         
         for alert in alerts {
             let fireAt = totalSeconds - alert.secondsBefore
-            guard fireAt > 0 else { continue } // skip if time limit is shorter than the warning window
+            guard fireAt > 0 else { continue }
 
             let content = UNMutableNotificationContent()
             content.title = "Parking Alert — \(title)"
