@@ -9,10 +9,10 @@ A native iOS app for saving, managing, and navigating back to your parked car.
 <p align="center">
   <img src="Screenshots/HomeScreen.PNG" width="250">
   <img src="Screenshots/DetailView.PNG" width="250">
-  <img src="Screenshots/QuickView.PNG" width="250">
-  <img src="Screenshots/Alerts.PNG" width="250">
   <img src="Screenshots/GetDirections.PNG" width="250">
+  <img src="Screenshots/Alerts.PNG" width="250">
   <img src="Screenshots/History.PNG" width="250">
+  <img src="Screenshots/QuickView.PNG" width="250">
 </p>
 
 ---
