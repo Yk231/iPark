@@ -6,7 +6,12 @@ A native iOS app for saving, managing, and navigating back to your parked car.
 
 ## Screenshots
 
-> _Screenshots coming soon_
+![Home Screen](Screenshots/HomeScreen.PNG)
+![Detailed Spot View](Screenshots/DetailView.PNG)
+![Quick Look](Screenshots/QuickView.PNG)
+![Alerts](Screenshots/Alerts.PNG)
+![Get Directions](Screenshots/GetDirections.PNG)
+![History](Screenshots/History.PNG)
 
 ---
 
@@ -27,7 +32,7 @@ A native iOS app for saving, managing, and navigating back to your parked car.
 
 - iOS 17.0+
 - Xcode 16+
-- A physical device is recommended for GPS features
+- A physical device is recommended for GPS and Notifications features
 
 ---
 
