@@ -30,13 +30,13 @@ struct PersistenceController {
             
             spot.latitude = 0.0
             spot.longitude = 0.0
-            spot.distanceTo = 0.0
             spot.timeLimitMinutes = 0
         }
 
         try? viewContext.save()
         return controller
         }()
+
 
     let container: NSPersistentContainer
 

@@ -15,10 +15,13 @@ class LocationController: NSObject, ObservableObject, CLLocationManagerDelegate 
     @Published var currentLocation: CLLocation?
     @Published var authorizationStatus: CLAuthorizationStatus?
     
+    // MARK: - init
     override init() {
         super.init()
         manager.delegate = self
     }
+    
+    // MARK: - Public Methods
     
     func startUpdating() {
         manager.requestWhenInUseAuthorization()
@@ -31,15 +34,15 @@ class LocationController: NSObject, ObservableObject, CLLocationManagerDelegate 
         manager.stopUpdatingLocation()
     }
     
+    func clearLocation() {
+        currentLocation = nil
+        stopUpdating()
+    }
+
     // MARK: - CLLocationManagerDelegate
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
-        
-        if manager.authorizationStatus == .authorizedWhenInUse ||
-           manager.authorizationStatus == .authorizedAlways {
-            manager.startUpdatingLocation()
-        }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -50,14 +53,4 @@ class LocationController: NSObject, ObservableObject, CLLocationManagerDelegate 
         print("Location error:", error.localizedDescription)
     }
     
-    
-    
-    func distanceToSpot(_ spot: SavedSpot) -> Double? {
-        guard let current = currentLocation else { return nil }
-        let spotLocation = CLLocation(
-            latitude: spot.latitude,
-            longitude: spot.longitude
-        )
-        return current.distance(from: spotLocation)
-    }
 }

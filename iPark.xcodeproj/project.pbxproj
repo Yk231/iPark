@@ -10,9 +10,22 @@
 		DA4CF1A72F988EF400C4304D /* iPark.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPark.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DA56845F2FB3DF4800AA73D2 /* Exceptions for "iPark" folder in "iPark" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = DA4CF1A62F988EF400C4304D /* iPark */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DA4CF1A92F988EF400C4304D /* iPark */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DA56845F2FB3DF4800AA73D2 /* Exceptions for "iPark" folder in "iPark" target */,
+			);
 			path = iPark;
 			sourceTree = "<group>";
 		};
@@ -254,6 +267,7 @@
 				DEVELOPMENT_TEAM = TVL3A8NVUM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iPark/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Allow location to save your parking spot";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow iPark to find your current location so you can save your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -266,7 +280,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark.local";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -288,6 +302,7 @@
 				DEVELOPMENT_TEAM = TVL3A8NVUM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iPark/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Allow location to save your parking spot";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow iPark to find your current location so you can save your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -300,7 +315,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.indiana.cs.c323-ykrikov.iPark.local";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;

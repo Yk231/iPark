@@ -20,7 +20,6 @@ struct SavedSpot: Codable, Identifiable {
     let notes: String?
     let startTime: Date
     let endTime: Date?
-    let distanceTo: Double
     let timeLimitMinutes: Int?
     
     
@@ -29,7 +28,6 @@ struct SavedSpot: Codable, Identifiable {
         self.latitude = latitude
         self.longitude = longitude
 
-        //Title
         if let unwrappedTitle = title, !unwrappedTitle.isEmpty {
             self.title = unwrappedTitle
         } else {
@@ -41,9 +39,9 @@ struct SavedSpot: Codable, Identifiable {
         self.number = number
         self.notes = notes
         self.startTime = Date()
-        self.distanceTo = 0
         self.endTime = nil
         self.timeLimitMinutes = timeLimitMinutes
+       
     }
     
     var coordinate: CLLocationCoordinate2D {

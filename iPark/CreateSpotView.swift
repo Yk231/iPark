@@ -8,58 +8,88 @@
 import SwiftUI
 import CoreLocation
 import CoreData
+import MapKit
 
 struct CreateSpotView: View {
+    // MARK: - Enviroment, @State wrappers, and variables
     @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) private var viewContext
+    
+    // Location
     @StateObject private var locationManager = LocationController()
+    @State private var mapPosition: MapCameraPosition
+    @State private var pinCoordinate: CLLocationCoordinate2D? = nil
+    
+    // Form Fields
     @State private var title: String = ""
     @State private var floor: String = ""
     @State private var notes: String = ""
     @State private var section: String = ""
     @State private var number: String = ""
     @State private var selectedHours: Int = 0
-    @State private var selectedMinutes: Int = 1
+    @State private var selectedMinutes: Int = 0
     @State private var hasTimeLimit: Bool = false
-    
     var timeLimitMinutes: Int {
         selectedHours * 60 + selectedMinutes
     }
-
+    
+    // Alerts
+    enum ActiveAlert: Identifiable{
+        case noLocation
+        var id: Self { self }
+    }
+    @State private var activeAlert: ActiveAlert? = nil
+    
+    // MARK: - Init
     let existingSpot: ParkingSpot?
     init(existingSpot: ParkingSpot? = nil) {
         self.existingSpot = existingSpot
         
+        // Basic details
         _title = State(initialValue: existingSpot?.title ?? "")
         _notes = State(initialValue: existingSpot?.notes ?? "")
         _floor = State(initialValue:
-            existingSpot.map {
-                $0.floor == 0 ? "" : String($0.floor)
-            } ?? ""
+                        existingSpot.map { $0.floor == 0 ? "" : String($0.floor) } ?? ""
         )
         _number = State(initialValue:
-            existingSpot.map {
-                $0.number == 0 ? "" : String($0.number)
-            } ?? ""
+                            existingSpot.map { $0.number == 0 ? "" : String($0.number) } ?? ""
         )
         _section = State(initialValue: existingSpot?.section ?? "")
-        _hasTimeLimit = State(initialValue: existingSpot?.timeLimitMinutes != nil && existingSpot!.timeLimitMinutes > 0)
-        if let existing = existingSpot, existing.timeLimitMinutes > 0 {
-            _selectedHours = State(initialValue: Int(existing.timeLimitMinutes) / 60)
-            _selectedMinutes = State(initialValue: Int(existing.timeLimitMinutes) % 60)
+        
+        // Coordinates
+        if let spot = existingSpot, spot.latitude != 0 || spot.longitude != 0 {
+            let coord = CLLocationCoordinate2D(latitude: spot.latitude, longitude: spot.longitude)
+            _pinCoordinate = State(initialValue: coord)
+            _mapPosition = State(initialValue: .region(MKCoordinateRegion(
+                center: coord,
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            )))
+        } else {
+            _pinCoordinate = State(initialValue: nil)
+            _mapPosition = State(initialValue: .region(MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 42.3601, longitude: -71.0589),
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            )))
         }
         
+        // Time limit
+        let limit = Int(existingSpot?.timeLimitMinutes ?? 0)
+        _hasTimeLimit = State(initialValue: limit > 0)
+        _selectedHours = State(initialValue: limit / 60)
+        _selectedMinutes = State(initialValue: limit % 60)
     }
     
+    
+    // MARK: - Body
     var body: some View {
-                
+        
         LogoView()
         
         
         List {
             
             
-            // BASIC DETAILS ------------------------------------------------------------------------------------
+            // MARK: - BASIC DETAILS
             Section("Spot Details") {
                 TextField("Title", text: $title)
                 TextField("Floor", text: $floor)
@@ -78,42 +108,62 @@ struct CreateSpotView: View {
             
             
             
-            
-            
-            
-            
-            // LOCATION ------------------------------------------------------------------------------------
+            // MARK: - LOCATION
             Section("Location") {
-                if let location = locationManager.currentLocation {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Latitude: \(location.coordinate.latitude)")
-                        Text("Longitude: \(location.coordinate.longitude)")
+                
+                // Map View
+                MapReader { proxy in
+                    Map(position: $mapPosition) {
+                        if let pin = pinCoordinate {
+                            Marker("Parking Spot", coordinate: pin)
+                                .tint(.blue)
+                        }
                     }
-                    .font(.subheadline)
-                } else {
-                    Text("No location captured yet.")
-                        .foregroundStyle(.secondary)
+                    .frame(height: 220)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .onTapGesture { screenPoint in
+                        if let coord = proxy.convert(screenPoint, from: .local) {
+                            pinCoordinate = coord
+                        }
+                    }
+                }
+                .listRowInsets(EdgeInsets())
+                
+                // Use Current Location button
+                Button {
+                    locationManager.startUpdating()
+                } label: {
+                    Text("Use Current Location")
                 }
                 
-                Button(action: {
-                    locationManager.startUpdating()
-                }, label: {
-                    Text("Use Current Location")
-                })
+                // Clear Location button
+                Button(role: .destructive) {
+                    locationManager.clearLocation()
+                    pinCoordinate = nil
+                } label: {
+                    Text("Clear Location")
+                }
+            }
+            .onChange(of: locationManager.currentLocation) { _, newLocation in
+                guard let newLocation else { return }
+                let coord = newLocation.coordinate
+                pinCoordinate = coord
+                mapPosition = .region(MKCoordinateRegion(
+                    center: coord,
+                    span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                ))
+                locationManager.stopUpdating()
+                
             }
             
             
             
-            
-            
-            
-            
-            // TIME LIMIT ------------------------------------------------------------------------------------
+            // MARK: - TIME LIMIT
             Section("Time Limit"){
                 let hours = Array(0...23)
                 
-                let minutes = [1, 15, 30, 45]
-        
+                let minutes = Array(0...59)
+                
                 
                 Toggle("Enable Time Limit", isOn: $hasTimeLimit)
                 if hasTimeLimit {
@@ -137,96 +187,93 @@ struct CreateSpotView: View {
                             }
                         }
                         .pickerStyle(.wheel)
-                                                
+                        
                     }
                     .frame(height: 150)
-                                        
+                    
                 }
                 
             }
             
             
             
-            
-            // SAVE BUTTON ------------------------------------------------------------------------------------
+            // MARK: - SAVE BUTTON
             Section {
                 Button {
-                    guard let location = locationManager.currentLocation else { return }
-                    
-                    let coordinate = location.coordinate
-                    
-                    // EDIT existing spot
-                    if let spot = existingSpot {
-                        spot.title = title.isEmpty ? "Parking Spot \(spot.id!.uuidString.prefix(4))" : title
-                        spot.notes = notes
-                        spot.section = section
-                        spot.latitude = coordinate.latitude
-                        spot.longitude = coordinate.longitude
-                        if let floorInt = Int16(floor) {
-                            spot.floor = floorInt
-                        }
-                        if let numberInt = Int16(number) {
-                            spot.number = numberInt
-                        }
-                        if hasTimeLimit {
-                            spot.timeLimitMinutes = Int16(timeLimitMinutes)
-                           
-                            NotificationManager.shared.cancelNotification(for: spot)
-                            NotificationManager.shared.scheduleNotification(for: spot)
-                            
-                        } else {
-                        
-                            NotificationManager.shared.cancelNotification(for: spot)
-                          
-                        }
+                    guard let coordinate = pinCoordinate else {
+                        activeAlert = .noLocation
+                        return
                     }
-                    // CREATE new spot
-                    else {
-                        let newSpot = ParkingSpot(context: viewContext)
-                        newSpot.id = UUID()
-                        newSpot.title = title.isEmpty ? "Parking Spot \(newSpot.id!.uuidString.prefix(4))" : title
-                        newSpot.notes = notes
-                        newSpot.section = section
-                        newSpot.latitude = coordinate.latitude
-                        newSpot.longitude = coordinate.longitude
-                        newSpot.startTime = Date()
-                        if let floorInt = Int16(floor) {
-                            newSpot.floor = floorInt
-                        }
-                        if let numberInt = Int16(number) {
-                            newSpot.number = numberInt
-                        }
-                        if hasTimeLimit {
-                            newSpot.timeLimitMinutes = Int16(timeLimitMinutes)
-                            
-                            NotificationManager.shared.scheduleNotification(for: newSpot)
-                         
-                        }
-                    }
-                    
-                    do {
-                        try viewContext.save()
-                    } catch {
-                        print("Save failed:", error)
-                    }
-                    
+                    saveSpot(coordinate: coordinate)
                     dismiss()
-                    
                 } label: {
                     Text(existingSpot == nil ? "Save Spot" : "Update Spot")
                 }
-                
-                
-                
-                
-                
-                
-                
             }
+            
+            
         }
+        // MARK: - .alerts
         .navigationTitle(existingSpot == nil ? "Create Spot" : "Edit Spot")
         .navigationBarTitleDisplayMode(.inline)
+        .alert(item: $activeAlert) { alert in
+            switch alert {
+            case .noLocation:
+                return Alert(
+                    title: Text("No Location Set"),
+                    message: Text("Please tap the map or use your current location before saving."),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            }
+        }
+        
+        
+        
+        
+
+       
+        
     }
     
+    // MARK: - Helper functions
+    // Saves a spot to persistent storage OR updates a pre-existing spot's data
+    func saveSpot(coordinate: CLLocationCoordinate2D) {
+        if let spot = existingSpot {
+            spot.title = title.isEmpty ? "Parking Spot \(spot.id!.uuidString.prefix(4))" : title
+            spot.notes = notes
+            spot.section = section
+            spot.latitude = coordinate.latitude
+            spot.longitude = coordinate.longitude
+            if let v = Int16(floor) { spot.floor = v }
+            if let v = Int16(number) { spot.number = v }
+            if hasTimeLimit && timeLimitMinutes > 0 {
+                spot.timeLimitMinutes = Int16(timeLimitMinutes)
+                NotificationManager.shared.scheduleNotification(for: spot)
+            } else {
+                spot.timeLimitMinutes = 0
+                NotificationManager.shared.cancelNotification(for: spot)
+            }
+        } else {
+            let newSpot = ParkingSpot(context: viewContext)
+            newSpot.id = UUID()
+            newSpot.title = title.isEmpty ? "Parking Spot \(newSpot.id!.uuidString.prefix(4))" : title
+            newSpot.notes = notes
+            newSpot.section = section
+            newSpot.latitude = coordinate.latitude
+            newSpot.longitude = coordinate.longitude
+            newSpot.startTime = Date()
+            if let v = Int16(floor) { newSpot.floor = v }
+            if let v = Int16(number) { newSpot.number = v }
+            if hasTimeLimit && timeLimitMinutes > 0 {
+                newSpot.timeLimitMinutes = Int16(timeLimitMinutes)
+                NotificationManager.shared.scheduleNotification(for: newSpot)
+            }
+        }
+        do {
+            try viewContext.save()
+        } catch {
+            print("Save failed:", error)
+        }
+    }
 }
 

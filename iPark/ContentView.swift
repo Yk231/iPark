@@ -13,8 +13,7 @@ struct ContentView: View {
     )
     private var spots: FetchedResults<ParkingSpot>
 
-    @State private var showAlerts = false
-
+    // MARK: - Body
     var body: some View {
                 
         NavigationStack {
@@ -27,6 +26,7 @@ struct ContentView: View {
                         HStack {
                             Spacer()
                             
+                            // Alerts button
                             NavigationLink {
                                 alertsView()
                             } label: {
@@ -42,9 +42,10 @@ struct ContentView: View {
                     Spacer()
                     Spacer()
                    
+                    // Scrollable LazyHStack of ongoing parking spots
                     if !spots.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
+                            LazyHStack(spacing: 10) {
                                 ForEach(spots) { spot in
                                     savedSpotCard(spot: spot)
                                 }
@@ -55,10 +56,11 @@ struct ContentView: View {
 
 
                 
+                    // Create spot button
                     NavigationLink {
                         CreateSpotView()
                     } label: {
-                        actionRow(
+                        ActionRow(
                             title: "Save New Spot",
                             subtitle: "Save your current parking spot.",
                             icon: "plus",
@@ -68,10 +70,11 @@ struct ContentView: View {
                     .buttonStyle(.plain)
                     
 
+                    // History view button
                     NavigationLink {
                         HistoryView()
                     } label: {
-                        actionRow(
+                        ActionRow(
                             title: "View History",
                             subtitle: "See your previous parking spots.",
                             icon: "clock.arrow.circlepath",
@@ -93,7 +96,7 @@ struct ContentView: View {
     
     
     
-    // --------------------------------------------------------------------------------------------------------------------
+    // MARK: - Header
     private var header: some View {
         VStack(spacing: 8) {
             Text("Welcome back!")
@@ -106,11 +109,16 @@ struct ContentView: View {
         .padding(.top, 8)
     }
     
+    // MARK: - Saved Spot Card
     private func savedSpotCard(spot: ParkingSpot) -> some View {
         VStack(alignment: .leading, spacing: 14) {
+            
+            // Header
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Parking Spot")
+                    
+                    let title = spot.title ?? "Parking Spot"
+                    Text("\(title)")
                         .font(.title3.bold())
 
                     Text("Your current saved parking spot.")
@@ -123,13 +131,13 @@ struct ContentView: View {
                 Image(systemName: "mappin.circle.fill")
                     .font(.system(size: 48))
                     .foregroundStyle(.blue)
-            }
-            if let title = spot.title, !title.isEmpty {
-                Text("\(title)")
-                    .font(.title3.bold())
+            
             }
             
-          
+            Divider()
+            
+            
+            // Display timer
             if spot.timeLimitMinutes > 0 {
                 let startTime = spot.startTime ?? Date()
                 let deadline = startTime.addingTimeInterval(Double(spot.timeLimitMinutes) * 60)
@@ -151,12 +159,13 @@ struct ContentView: View {
                 }
             }
            
-                        
+            // Map
             MapView(longitude: spot.longitude, latitude: spot.latitude)
                 .frame(height: 150)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .allowsHitTesting(false) 
 
+            // View spot navigation to SavedSpotDetailView
             NavigationLink {
                 SavedSpotDetailView(spot: spot)
             } label: {
@@ -165,52 +174,23 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(.blue)
-                    .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
             }
             .buttonStyle(.plain)
         }
         .padding()
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 4)
+        .background(
+            RoundedRectangle(cornerRadius: 26)
+                .fill(.ultraThinMaterial)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 26)
+                .stroke(.white.opacity(0.06), lineWidth: 1)
+        )
     }
 
 
 
-    
-    
-
-    private func actionRow(title: String, subtitle: String, icon: String, color: Color) -> some View {
-        HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 28, weight: .semibold))
-                .frame(width: 56, height: 56)
-                .background(color.opacity(0.15))
-                .foregroundStyle(color)
-                .clipShape(Circle())
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .foregroundStyle(.secondary)
-        }
-        .padding()
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
-    }
 }
 
 #Preview {

@@ -15,7 +15,6 @@ struct MapView: View {
     let longitude: Double
     let latitude: Double
     var title: String = "Location"
-    var userLocation: CLLocationCoordinate2D? = nil
 
     @State private var position: MapCameraPosition
 
@@ -25,11 +24,10 @@ struct MapView: View {
 
     // MARK: - Init
 
-    init(longitude: Double, latitude: Double, title: String = "Location", userLocation: CLLocationCoordinate2D? = nil) {
+    init(longitude: Double, latitude: Double, title: String = "Parking Spot") {
         self.longitude = longitude
         self.latitude = latitude
         self.title = title
-        self.userLocation = userLocation
 
         let coord = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         _position = State(initialValue: .region(MKCoordinateRegion(
@@ -44,45 +42,33 @@ struct MapView: View {
         Map(position: $position) {
             Marker(title, coordinate: spotCoordinate)
                 .tint(.blue)
-            if let userCoord = userLocation {
-                Marker("You", coordinate: userCoord)
-                    .tint(.green)
-                MapPolyline(coordinates: [userCoord, spotCoordinate])
-                    .stroke(.blue, lineWidth: 3)
-            }
         }
         .mapStyle(.standard)
         .accessibilityLabel("Map showing \(title)")
-        .onChange(of: userLocation?.latitude) { _ in
-            zoomToFitBoth()
-        }
+        .onChange(of: latitude) { recenter() }
+        .onChange(of: longitude) { recenter() }
+
+    }
+    
+    
+    
+    
+    
+    // MARK: - Helper functions
+    // Recenter function
+    private func recenter() {
+        let coord = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        position = .region(MKCoordinateRegion(
+            center: coord,
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        ))
     }
 
-    // MARK: - Private Methods
-
-    private func zoomToFitBoth() {
-        guard let userCoord = userLocation else { return }
-
-        let minLat = min(spotCoordinate.latitude, userCoord.latitude)
-        let maxLat = max(spotCoordinate.latitude, userCoord.latitude)
-        let minLon = min(spotCoordinate.longitude, userCoord.longitude)
-        let maxLon = max(spotCoordinate.longitude, userCoord.longitude)
-
-        let center = CLLocationCoordinate2D(
-            latitude: (minLat + maxLat) / 2,
-            longitude: (minLon + maxLon) / 2
-        )
-
-        let span = MKCoordinateSpan(
-            latitudeDelta: (maxLat - minLat) * 2.5,
-            longitudeDelta: (maxLon - minLon) * 2.5
-        )
-
-        withAnimation {
-            position = .region(MKCoordinateRegion(center: center, span: span))
-        }
-    }
+ 
 }
+
+
+
 
 // MARK: - Preview
 
