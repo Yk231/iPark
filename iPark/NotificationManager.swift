@@ -17,54 +17,62 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         UNUserNotificationCenter.current().delegate = self
     }
     
+    // MARK: - Permission
     func requestPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-            if success {
-        
-            } else if let error = error {
-            }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if let error { print("Notification permission error:", error) }
         }
     }
-    
+
+    // MARK: - Schedule
     func scheduleNotification(for spot: ParkingSpot) {
         guard let id = spot.id?.uuidString,
               spot.timeLimitMinutes > 0,
-              let title = spot.title else {
-            return
-        }
+              let title = spot.title else { return }
         
-        let content = UNMutableNotificationContent()
-        content.title = "Parking Time Alert"
-        content.body = "Your time for '\(title)' is up!"
-        content.sound = .default
+        cancelNotification(for: spot)
         
-        let timeInterval = Double(spot.timeLimitMinutes) * 60
-    
-        guard timeInterval > 0 else { return }
+        let totalSeconds = Double(spot.timeLimitMinutes) * 60
+        guard totalSeconds > 0 else { return }
+                           
+        let alerts: [(label: String, secondsBefore: Double)] = [
+                    ("You have 15 minutes left for '\(title)'",  15 * 60),
+                    ("You have 10 minutes left for '\(title)'",  10 * 60),
+                    ("You have 5 minutes left for '\(title)'",    5 * 60),
+                    ("Your time for '\(title)' is up!",           0)
+                ]
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-        
-        
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-            } else {
+        for alert in alerts {
+            let fireAt = totalSeconds - alert.secondsBefore
+            guard fireAt > 0 else { continue } // skip if time limit is shorter than the warning window
 
+            let content = UNMutableNotificationContent()
+            content.title = "Parking Alert — \(title)"
+            content.body = alert.label
+            content.sound = .default
+
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: fireAt, repeats: false)
+            let identifier = "\(id)_\(Int(alert.secondsBefore))"
+            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error { print("Failed to schedule '\(alert.label)' notification:", error) }
             }
         }
     }
     
+    // MARK: - Cancel Notifactions
     func cancelNotification(for spot: ParkingSpot) {
         guard let id = spot.id?.uuidString else { return }
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+
+        let identifiers = [15 * 60, 10 * 60, 5 * 60, 0].map { "\(id)_\($0)" }
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
     }
     
+    // MARK: - Presentation of Notification
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound, .badge])
     }
 }
-
-
-
