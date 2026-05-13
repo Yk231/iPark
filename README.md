@@ -21,7 +21,7 @@ A native iOS app for saving, managing, and navigating back to your parked car.
 
 - **Save your spot** — capture your parking location with a map pin or your current GPS location
 - **Spot details** — log floor, section, number, and notes for garage parking
-- **Time limits** — set a time limit and receive push notifications at 15, 10, and 5 minutes remaining, plus an expiry alert when the timer hits 0
+- **Time limits** — set a time limit and receive push notifications at 15, 10, and 5 minutes remaining, plus an expiry alert
 - **Guide Me** — open directions to your parked car in Apple Maps or Google Maps
 - **Alerts tab** — view active spots sorted by urgency, with high-priority warnings for spots expiring soon
 - **History** — browse past parking sessions with duration and location details
