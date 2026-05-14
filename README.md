@@ -27,14 +27,14 @@ A native iOS app for saving, managing, and navigating back to your parked car.
 - **History** — browse past parking sessions with duration and location details
 - **Delete & unarchive** — swipe left to permanently delete a past session, or swipe right to restore it to active
 - **Quick Look** — tap any spot for an at-a-glance overlay of its essential details
-
+- **Siri** - Ask Siri to save your parking spot hands-free
 ---
 
 ## Requirements
 
 - iOS 17.0+
 - Xcode 16+
-- A physical device is recommended for GPS and Notifications features
+- A physical device is recommended for GPS, Notifications, and Siri features
 
 ---
 
@@ -70,6 +70,8 @@ No external dependencies or package manager setup required.
 | Location | CoreLocation |
 | Maps | MapKit |
 | Notifications | UserNotifications |
+| Siri | AppIntents |
+
 
 ---
 

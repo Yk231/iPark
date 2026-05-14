@@ -2,6 +2,8 @@
 //  SpotQuickLookView.swift
 //  iPark2
 //
+//  Created by Yotam Krikov on 5/7/26.
+//
 
 import SwiftUI
 import CoreData

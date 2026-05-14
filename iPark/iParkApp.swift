@@ -1,6 +1,6 @@
 //
-//  iPark2App.swift
-//  iPark2
+//  iParkApp.swift
+//  iPark
 //
 //  Created by Yotam Krikov on 4/22/26.
 //

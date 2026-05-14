@@ -2,7 +2,7 @@
 //  LocationController.swift
 //  iPark
 //
-//  Created by Taila Iwase on 4/21/26.
+//  Created by Yotam Krikov on 4/21/26.
 //
 import Foundation
 import Combine

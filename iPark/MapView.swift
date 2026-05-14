@@ -2,7 +2,7 @@
 //  MapView.swift
 //  iPark2
 //
-//  Created by Taila Iwase on 4/23/26.
+//  Created by Yotam Krikov on 4/23/26.
 //
 
 import SwiftUI
