@@ -210,11 +210,8 @@ struct alertsView: View {
             
             Spacer(minLength: 12)
             
-            // MAP
-            MapView(longitude: spot.longitude, latitude: spot.latitude)
-                .frame(width: 100, height: 92)
-                .clipShape(RoundedRectangle(cornerRadius: 18))
-                .allowsHitTesting(false)
+            // MEDIA
+            PhotoAndOrMap2(spot: spot)
             
         }
         .padding()

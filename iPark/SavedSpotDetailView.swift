@@ -23,6 +23,7 @@ struct SavedSpotDetailView: View {
     var showsEndTime: Bool = false
 
     @StateObject private var locationController = LocationController()
+    @StateObject private var photoManager = PhotoController()
     @State private var showMapPicker = false
 
     // MARK: - Body
@@ -31,30 +32,54 @@ struct SavedSpotDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
 
+                //MARK: - Media
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 12) {
+                        
+                        // MAP VIEW
+                        if spot.latitude != 0 && spot.longitude != 0 {
+                            MapView(
+                                longitude: spot.longitude,
+                                latitude: spot.latitude,
+                            )
+                            .containerRelativeFrame(.horizontal) { width, _ in width - 48 }
+                            .frame(height: 250)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 26)
+                                    .stroke(.ultraThinMaterial)
+                            )
+                        }
+                        
+                        
+                        // PHOTO
+                        if let image = photoManager.selectedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .containerRelativeFrame(.horizontal) { width, _ in width - 48 }
+                                .frame(height: 250)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .listRowInsets(EdgeInsets())
+                            
+                        }
+                    }
+                    .padding()
+                }
+                .onAppear {
+                    photoManager.load(from: spot.photo)
+                }
+                               
                 
-                // MAP VIEW
-                MapView(
-                    longitude: spot.longitude,
-                    latitude: spot.latitude,
-                )
-                .frame(height: 240)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 26)
-                        .stroke(.ultraThinMaterial)
-                )
+                
  
-                
-
-                
-                
-                // SPOT INFO
+                // MARK: - Spot Info
                 spotInfo(spot: spot)
                 
 
                 
                 
-                // BUTTONS
+                // MARK: - Buttons
                 VStack(spacing: 12) {
                     
                     // EDIT SPOT

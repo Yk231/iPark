@@ -47,6 +47,8 @@ private struct SpotQuickLookCard: View {
 
     let spot: ParkingSpot
     @Binding var isPresented: Bool
+    @State private var showingMap: Bool = true
+    @StateObject private var photoController = PhotoController()
 
     // Pull the small map snapshot
     private var hasLocation: Bool {
@@ -77,15 +79,9 @@ private struct SpotQuickLookCard: View {
 
             Divider()
 
-            // Map thumbnail
-            if hasLocation {
-                MapView(
-                    longitude: spot.longitude,
-                    latitude: spot.latitude,
-                )
-                .frame(height: 160)
-                .clipped()
-            }
+            // Map and Photo Overlap
+            PhotoAndOrMap1(spot: spot)
+
 
             // Info rows
             VStack(alignment: .leading, spacing: 10) {

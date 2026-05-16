@@ -47,8 +47,9 @@ struct ContentView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack(spacing: 10) {
                                 ForEach(spots) { spot in
-                                    savedSpotCard(spot: spot)
+                                    SavedSpotCard(spot: spot)
                                 }
+                                
                             }
                             .padding()
                         }
@@ -108,88 +109,6 @@ struct ContentView: View {
         .frame(maxWidth: .infinity)
         .padding(.top, 8)
     }
-    
-    // MARK: - Saved Spot Card
-    private func savedSpotCard(spot: ParkingSpot) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            
-            // Header
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
-                    
-                    let title = spot.title ?? "Parking Spot"
-                    Text("\(title)")
-                        .font(.title3.bold())
-
-                    Text("Your current saved parking spot.")
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Spacer()
-
-                Image(systemName: "mappin.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundStyle(.blue)
-            
-            }
-            
-            Divider()
-            
-            
-            // Display timer
-            if spot.timeLimitMinutes > 0 {
-                let startTime = spot.startTime ?? Date()
-                let deadline = startTime.addingTimeInterval(Double(spot.timeLimitMinutes) * 60)
-                
-                TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                    let isExpired = context.date > deadline
-                    
-                    HStack {
-                        Image(systemName: "timer")
-                        if isExpired {
-                            Text("Expired")
-                        } else {
-                            Text(timerInterval: startTime...deadline, countsDown: true)
-                        }
-                    }
-                    .font(.subheadline.bold())
-                    .foregroundStyle(isExpired ? .red : .blue)
-                    .padding(.vertical, 4)
-                }
-            }
-           
-            // Map
-            MapView(longitude: spot.longitude, latitude: spot.latitude)
-                .frame(height: 150)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-                .allowsHitTesting(false) 
-
-            // View spot navigation to SavedSpotDetailView
-            NavigationLink {
-                SavedSpotDetailView(spot: spot)
-            } label: {
-                Text("View Parking Spot")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(.blue)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 26)
-                .fill(.ultraThinMaterial)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 26)
-                .stroke(.white.opacity(0.06), lineWidth: 1)
-        )
-    }
-
-
 
 }
 

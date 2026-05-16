@@ -268,8 +268,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iPark/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Used to take a photo of your parking spot.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Allow location to save your parking spot";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow iPark to find your current location so you can save your parking spot.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Used to select a photo for your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -303,8 +305,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iPark/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Used to take a photo of your parking spot.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Allow location to save your parking spot";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow iPark to find your current location so you can save your parking spot.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Used to select a photo for your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

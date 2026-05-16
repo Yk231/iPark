@@ -9,16 +9,13 @@ import SwiftUI
 import CoreLocation
 import CoreData
 import MapKit
+import PhotosUI
 
 struct CreateSpotView: View {
-    // MARK: - Enviroment, @State wrappers, and variables
+    // MARK: - Enviroment and variables
+    // Enviroment
     @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) private var viewContext
-    
-    // Location
-    @StateObject private var locationManager = LocationController()
-    @State private var mapPosition: MapCameraPosition
-    @State private var pinCoordinate: CLLocationCoordinate2D? = nil
     
     // Form Fields
     @State private var title: String = ""
@@ -33,9 +30,23 @@ struct CreateSpotView: View {
         selectedHours * 60 + selectedMinutes
     }
     
+    // Photo
+    @StateObject private var photoManager = PhotoController()
+    @State private var showPhotoSourcePicker: Bool = false
+    @State private var showPhotoPicker: Bool = false
+    @State private var showCamera: Bool = false
+    @State private var addOrReplacePhotoLabel: String = "Add photo"
+    @State private var pendingPhotoAction: (() -> Void)? = nil
+
+ 
+    // Location
+    @StateObject private var locationManager = LocationController()
+    @State private var mapPosition: MapCameraPosition
+    @State private var pinCoordinate: CLLocationCoordinate2D? = nil
+    
     // Alerts
     enum ActiveAlert: Identifiable{
-        case noLocation
+        case noLocationOrPhoto
         var id: Self { self }
     }
     @State private var activeAlert: ActiveAlert? = nil
@@ -56,7 +67,10 @@ struct CreateSpotView: View {
         )
         _section = State(initialValue: existingSpot?.section ?? "")
         
-        // Coordinates
+        // Pre-load existing photo
+        //photoManager.load(from: data)
+
+        // Pre-load map with coordinates
         if let spot = existingSpot, spot.latitude != 0 || spot.longitude != 0 {
             let coord = CLLocationCoordinate2D(latitude: spot.latitude, longitude: spot.longitude)
             _pinCoordinate = State(initialValue: coord)
@@ -78,7 +92,7 @@ struct CreateSpotView: View {
         _selectedHours = State(initialValue: limit / 60)
         _selectedMinutes = State(initialValue: limit % 60)
     }
-    
+
     
     // MARK: - Body
     var body: some View {
@@ -106,6 +120,98 @@ struct CreateSpotView: View {
                 TextField("Notes", text: $notes)
             }
             
+            
+            
+            // MARK: - Photo
+            Section("Photo") {
+                if let image = photoManager.selectedImage {
+                    
+                    // Show selected photo with tap to replace
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 300)
+                        .frame(maxWidth: .infinity)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .listRowInsets(EdgeInsets())
+                        .onTapGesture { showPhotoSourcePicker = true }
+                        .padding(16)
+
+                } else {
+                    // Empty dotted placeholder
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.blue.opacity(0.07))
+                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
+                            .frame(height: 140)
+
+                        VStack(spacing: 8) {
+                            Image(systemName: "plus.circle")
+                                .font(.system(size: 32))
+                                .foregroundStyle(.secondary)
+                            Text("Add Photo")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .onTapGesture { showPhotoSourcePicker = true }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                }
+                
+                // Add or Replace Photo
+                Button {
+                    showPhotoSourcePicker = true
+                } label: {
+                    let text = photoManager.imageExists ? "Replace Photo" : "Add Photo"
+                    Text("\(text)")
+                }
+                
+                // Clear Photo
+                Button(role: .destructive) {
+                    photoManager.clear()
+                } label: {
+                    Text("Remove Photo")
+                }
+                
+            }
+            // Load photo from existingSpot if it exists
+            .onAppear {
+                photoManager.load(from: existingSpot?.photo)
+            }
+            .onChange(of: photoManager.photoPickerItem) { _, _ in
+                Task { await photoManager.loadFromPicker() }
+            }
+            // Add photo sheet
+            .sheet(isPresented: $showPhotoSourcePicker, onDismiss: {
+                pendingPhotoAction?()
+                pendingPhotoAction = nil
+            }) {
+                PhotoSourcePickerSheet(
+                    isPresented: $showPhotoSourcePicker,
+                    imageExists: photoManager.imageExists,
+                    onCamera: {
+                        pendingPhotoAction = { showCamera = true }
+                    },
+                    onLibrary: {
+                        pendingPhotoAction = { showPhotoPicker = true }
+                    },
+                    onRemove: {
+                        photoManager.clear()
+                    }
+                )
+            }
+            // Camera sheet
+            .sheet(isPresented: $showCamera) {
+                CameraView(image: $photoManager.selectedImage)
+            }
+            // Photo library picker
+            .photosPicker(
+                isPresented: $showPhotoPicker,
+                selection: $photoManager.photoPickerItem,
+                matching: .images
+            )
+
+
             
             
             // MARK: - LOCATION
@@ -200,11 +306,12 @@ struct CreateSpotView: View {
             // MARK: - SAVE BUTTON
             Section {
                 Button {
-                    guard let coordinate = pinCoordinate else {
-                        activeAlert = .noLocation
+                    // Must have at least a location or a photo
+                    guard pinCoordinate != nil || photoManager.imageExists else {
+                        activeAlert = .noLocationOrPhoto
                         return
                     }
-                    saveSpot(coordinate: coordinate)
+                    saveSpot()
                     dismiss()
                 } label: {
                     Text(existingSpot == nil ? "Save Spot" : "Update Spot")
@@ -213,15 +320,15 @@ struct CreateSpotView: View {
             
             
         }
-        // MARK: - .alerts
         .navigationTitle(existingSpot == nil ? "Create Spot" : "Edit Spot")
         .navigationBarTitleDisplayMode(.inline)
+        // MARK: - .alerts
         .alert(item: $activeAlert) { alert in
             switch alert {
-            case .noLocation:
+            case .noLocationOrPhoto:
                 return Alert(
-                    title: Text("No Location Set"),
-                    message: Text("Please tap the map or use your current location before saving."),
+                    title: Text("No Location or Photo"),
+                    message: Text("Please add either a location or a photo before saving."),
                     dismissButton: .cancel(Text("OK"))
                 )
             }
@@ -237,13 +344,16 @@ struct CreateSpotView: View {
     
     // MARK: - Helper functions
     // Saves a spot to persistent storage OR updates a pre-existing spot's data
-    func saveSpot(coordinate: CLLocationCoordinate2D) {
+    func saveSpot() {
+        let coordinate = pinCoordinate
+                
         if let spot = existingSpot {
             spot.title = title.isEmpty ? "Parking Spot \(spot.id!.uuidString.prefix(4))" : title
             spot.notes = notes
             spot.section = section
-            spot.latitude = coordinate.latitude
-            spot.longitude = coordinate.longitude
+            spot.latitude = coordinate?.latitude ?? 0
+            spot.longitude = coordinate?.longitude ?? 0
+            spot.photo = photoManager.jpegData
             if let v = Int16(floor) { spot.floor = v }
             if let v = Int16(number) { spot.number = v }
             if hasTimeLimit && timeLimitMinutes > 0 {
@@ -259,8 +369,9 @@ struct CreateSpotView: View {
             newSpot.title = title.isEmpty ? "Parking Spot \(newSpot.id!.uuidString.prefix(4))" : title
             newSpot.notes = notes
             newSpot.section = section
-            newSpot.latitude = coordinate.latitude
-            newSpot.longitude = coordinate.longitude
+            newSpot.latitude = coordinate?.latitude ?? 0
+            newSpot.longitude = coordinate?.longitude ?? 0
+            newSpot.photo = photoManager.jpegData
             newSpot.startTime = Date()
             if let v = Int16(floor) { newSpot.floor = v }
             if let v = Int16(number) { newSpot.number = v }
