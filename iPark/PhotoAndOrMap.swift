@@ -9,6 +9,7 @@ import SwiftUI
 import MapKit
 import PhotosUI
 
+// MARK: - 1
 // For the thumbnail view, where they switch on tap
 // In SavedSpotCard and SavedSpotquickLookOverlay
 struct PhotoAndOrMap1: View {
@@ -85,7 +86,9 @@ struct PhotoAndOrMap1: View {
         .onAppear {
             let data = spot.photo
             photoController.load(from: data)
-
+        }
+        .onChange(of: spot.photo) { _, newData in
+            photoController.load(from: newData)
         }
         
         
@@ -94,7 +97,7 @@ struct PhotoAndOrMap1: View {
 
 
 
-
+// MARK: - 2
 // Mini overlay in rows of AlertsView and HistoryView
 struct PhotoAndOrMap2: View {
     
@@ -109,7 +112,8 @@ struct PhotoAndOrMap2: View {
         
         
         ZStack {
-            // BACKGROUND — full size
+            // Both Map and Photo
+            // Display Map with a shadow to indicate more media
             if hasLocation && hasPhoto {
                     
                 RoundedRectangle(cornerRadius: 18)
@@ -124,12 +128,14 @@ struct PhotoAndOrMap2: View {
 
                     
             }
+            // Only Map
             else if !hasPhoto{
                 MapView(longitude: spot.longitude, latitude: spot.latitude)
                     .frame(width: 100, height: 92)
                     .clipShape(RoundedRectangle(cornerRadius: 18))
                     .allowsHitTesting(false)
             }
+            // Only Photo
             else if let image = photoController.selectedImage{
                 Image(uiImage: image)
                     .resizable()
